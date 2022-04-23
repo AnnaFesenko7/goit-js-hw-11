@@ -1,7 +1,8 @@
 import './sass/main.scss';
 // import pictureCard from './partials/picture-card';
-// import pictureCard from './partials/picture-card';
+import renderCards from './js/renderCards';
 import NewsApiService from './js/news-servis';
+import LoadMoreBtn from './js/load-more-btn';
 import Notiflix from 'notiflix';
 
 const newsApiService = new NewsApiService()
@@ -11,12 +12,12 @@ const newsApiService = new NewsApiService()
 const refs = {
     searchForm: document.querySelector('.js-search-form'),
     showGallery: document.querySelector('.js-gallery'),
-    loadMoreBtn: document.querySelector('.js-load-more')
+    loadMore: document.querySelector('.js-load-more')
 }
 
-refs.loadMoreBtn.classList.add('.is-hidden');
+
 refs.searchForm.addEventListener('submit', onSearch);
-refs.loadMoreBtn.addEventListener('click', onLoadMore);
+refs.loadMore.addEventListener('click', onLoadMore);
 
 
 function onSearch(e) {
@@ -28,9 +29,9 @@ function onSearch(e) {
     newsApiService.fetchPictures().then(data => {
         clearPicturesContainer()
         onFetchMessage(data.totalHits);
-        renderCards(data.hits);
-        refs.loadMoreBtn.classList.remove('.is-hidden');
-        console.log(refs.loadMoreBtn)
+        renderCards(data.hits, refs.showGallery);
+        // refs.loadMoreBtn.classList.remove('is-hidden');
+        // console.log(refs.loadMore)
     })
         .catch(onFetchError)
 }
@@ -50,30 +51,7 @@ function onFetchMessage(totalHits) {
 
 
 
-function renderCards(hits) {
-    const markup = 
-        hits.map(({ webformatURL, largeImageURL, tags, likes, views, comments, downloads }) => 
-            `<div class="photo-card">
-    <img src="${webformatURL}" alt="${tags}" loading="lazy" />
-    <div class="info">
-        <p class="info-item">
-            <b>Likes:${likes}</b>
-        </p>
-        <p class="info-item">
-            <b>Views:${views}</b>
-        </p>
-        <p class="info-item">
-            <b>Comments:${comments}</b>
-        </p>
-        <p class="info-item">
-            <b>Downloads:${downloads}</b>
-        </p>
-    </div>
-</div>`).join('')
-    
-    
-    refs.showGallery.insertAdjacentHTML('beforeend', markup);
-}
+
 
 function clearPicturesContainer() {
     refs.showGallery.innerHTML=''
