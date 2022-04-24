@@ -1,3 +1,5 @@
+// import {loadMoreBtn} from '../index.js'
+
 const API_KEY = '26884137-1496ffbfb9f3a2601523745ce'
 const BASE_URL = 'https://pixabay.com'
    
@@ -6,10 +8,11 @@ const BASE_URL = 'https://pixabay.com'
 export default class NewsApiService {
   constructor() {
     this.searchQuery = '';
-    this.page = 1;
+    this.page = 0;
   }
     
-    fetchPictures() {
+  fetchPictures() {
+      this.incrementPage()
        const url = `${BASE_URL}/api/?key=${API_KEY}&q=${this.searchQuery}&image_type=photo&per_page=40&page=${this.page}&orientation=horizontal&safesearch=true`
         console.log(this)
       return fetch(url)
@@ -17,18 +20,19 @@ export default class NewsApiService {
           if(!r.ok) {throw Error(r.statusText);
           }return r.json()})
          .then(data => {
-           console.log (data)
+           console.log ('new-servis',data)
            if(data.totalHits===0){throw Error(r.statusText)}
-           this.incrementPage()
-           return data
+          //  this.incrementPage()
+           return {data, page:this.page}
          });
       }
       
       incrementPage() {
-        this.page += 1;
+      return  this.page += 1;
+        // loadMoreBtn.page = this.page;
       }
       resetPage() {
-        this.page = 1;
+        this.page = 0;
       }
 
     get query() {

@@ -1,9 +1,15 @@
 import './sass/main.scss';
-// import pictureCard from './partials/picture-card';
+
+import SimpleLightbox from "simplelightbox";
+import "simplelightbox/dist/simple-lightbox.min.css";
+import Notiflix from 'notiflix';
+
+
+
 import renderCards from './js/renderCards';
 import NewsApiService from './js/news-servis';
-import LoadMoreBtn from './js/load-more-btn';
-import Notiflix from 'notiflix';
+// import LoadMoreBtn from './js/load-more-btn';
+
 
 const newsApiService = new NewsApiService()
 
@@ -11,13 +17,14 @@ const newsApiService = new NewsApiService()
 
 const refs = {
     searchForm: document.querySelector('.js-search-form'),
-    showGallery: document.querySelector('.js-gallery'),
-    loadMore: document.querySelector('.js-load-more')
+    galleryContainer: document.querySelector('.gallery'),
+    loadMoreBtn: document.querySelector('.js-load-more')
 }
 
 
 refs.searchForm.addEventListener('submit', onSearch);
-refs.loadMore.addEventListener('click', onLoadMore);
+refs.loadMoreBtn.addEventListener('click', onLoadMore);
+
 
 
 function onSearch(e) {
@@ -26,19 +33,37 @@ function onSearch(e) {
     newsApiService.resetPage()
     
     
-    newsApiService.fetchPictures().then(data => {
+    newsApiService.fetchPictures()
+        .then(({ data, page }) => {
+        console.log('page',page)
         clearPicturesContainer()
         onFetchMessage(data.totalHits);
-        renderCards(data.hits, refs.showGallery);
-        // refs.loadMoreBtn.classList.remove('is-hidden');
-        // console.log(refs.loadMore)
+        renderCards(data.hits, refs.galleryContainer);
+        hasNextPage(data.totalHits, page)
     })
         .catch(onFetchError)
 }
 
 function onLoadMore(e) {
-    newsApiService.fetchPictures().then(renderCards)
+    newsApiService.fetchPictures()
+    .then(({ data, page }) => {
+        renderCards(data.hits, refs.galleryContainer);
+        hasNextPage(data.totalHits, page)
+    }
+    )}
+
+function hasNextPage(totalHits, page) {
+    const limit = 40;
+    const totalPage = Math.ceil(totalHits / limit);
+    console.log('totalPage',totalPage,page)
+    if (totalPage > page) {
+        refs.loadMoreBtn.classList.remove('is-hidden')
+        
+    }else{refs.loadMoreBtn.classList.add('is-hidden')}
+     
 }
+
+
 
 
 function onFetchError() {
@@ -54,5 +79,7 @@ function onFetchMessage(totalHits) {
 
 
 function clearPicturesContainer() {
-    refs.showGallery.innerHTML=''
+    refs.galleryContainer.innerHTML=''
 }
+
+
