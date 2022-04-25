@@ -24,7 +24,6 @@ export default function renderCards(hits, container) {
     
     
     container.insertAdjacentHTML('beforeend', markup);
-    const lightbox = new SimpleLightbox('.gallery a', {
-   
-    });
+    const lightbox = new SimpleLightbox('.gallery a',);
+     lightbox.refresh();
 }
