@@ -11,21 +11,36 @@ export default class NewsApiService {
     this.page = 0;
   }
     
-  fetchPictures() {
-      this.incrementPage()
-       const url = `${BASE_URL}/api/?key=${API_KEY}&q=${this.searchQuery}&image_type=photo&per_page=40&page=${this.page}&orientation=horizontal&safesearch=true`
-        console.log(this)
-      return fetch(url)
-        .then(r => {
-          if(!r.ok) {throw Error(r.statusText);
-          }return r.json()})
-         .then(data => {
-           console.log ('new-servis',data)
-           if(data.totalHits===0){throw Error(r.statusText)}
-          //  this.incrementPage()
-           return {data, page:this.page}
-         });
-      }
+  // fetchPictures() {
+  //     this.incrementPage()
+  //      const url = `${BASE_URL}/api/?key=${API_KEY}&q=${this.searchQuery}&image_type=photo&per_page=40&page=${this.page}&orientation=horizontal&safesearch=true`
+  //       console.log(this)
+  //     return fetch(url)
+  //       .then(r => {
+  //         if(!r.ok) {throw Error(r.statusText);
+  //         }return r.json()})
+  //        .then(data => {
+  //          console.log ('new-servis',data)
+  //          if(data.totalHits===0){throw Error(r.statusText)}
+  //         
+  //          return {data, page:this.page}
+  //        });
+  // }
+  async fetchPictures() {
+    this.incrementPage()
+    const url = `${BASE_URL}/api/?key=${API_KEY}&q=${this.searchQuery}&image_type=photo&per_page=40&page=${this.page}&orientation=horizontal&safesearch=true`
+    try {
+      const r = await fetch(url);
+    
+    const data = await r.json()
+    if (data.totalHits === 0) { throw Error(r.statusText) }
+    return {data, page:this.page}
+    } catch (error) {throw Error(r.statusText)}
+    
+  }
+  
+
+  
       
       incrementPage() {
       return  this.page += 1;
